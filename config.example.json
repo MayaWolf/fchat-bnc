@@ -1,0 +1,15 @@
+{
+  "account": "",
+  "password": "",
+  "host": "wss://chat.f-list.net:9799",
+  "characters": [""],
+  "port": 9799,
+  "savedChannels": [],
+  "debug": false,
+  "logPrivate": true,
+  "logChannels": true,
+  "logAds": false,
+  "logDirectory": "logs",
+  "certFile": null,
+  "keyFile": null
+}
