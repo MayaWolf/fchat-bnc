@@ -81,5 +81,9 @@ server.on('connection', (client) => {
 		clearTimeout(closeTimer);
 		if(pinInterval !== undefined) clearInterval(pinInterval);
 	});
+	client.on('error', (e) => {
+		console.error(`Client disconnected with error: ${e}`);
+		client.close();
+	});
 });
 console.log('FChat BNC running.');

@@ -5,14 +5,14 @@
   "author": "Maya Wolf",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^8.0.33",
+    "@types/node": "^9.4.0",
     "@types/qs": "^6.5.0",
-    "@types/ws": "^3.2.0",
+    "@types/ws": "^4.0.0",
     "date-fns": "^1.28.5",
     "fchat": "^1.0.0",
-    "tslib": "^1.7.1",
-    "typescript": "^2.5.3",
-    "ws": "^3.2.0"
+    "tslib": "^1.9.0",
+    "typescript": "^2.7.1",
+    "ws": "^4.0.0"
   },
   "scripts": {
     "build": "tsc"

@@ -21,7 +21,7 @@ export default class ServerConnection extends ChatConnection {
 	private buffer: string[] = [];
 
 	constructor(socketProvider: new() => WebSocketConnection, account: string, password: string) {
-		super(socketProvider, account, password);
+		super(pkg.name, pkg.version, socketProvider, account, password);
 		this.characters = Characters(this);
 		this.channels = Channels(this, this.characters);
 	}
@@ -36,15 +36,19 @@ export default class ServerConnection extends ChatConnection {
 		if(type === 'MSG' || type === 'PRI' || type === 'RLL')
 			this.buffer.push(`${type} ${JSON.stringify(data)}`);
 		if(type === 'MSG' && config.logChannels || type === 'LRP' && config.logAds) {
-			this.logMessage(messageToString(data.character, data.message, date), data.channel, date, type === 'LRP');
+			this.logMessage(messageToString(data.character, data.message, date), this.getChannelDir(data.channel), date, type === 'LRP');
 		} else if(type === 'PRI' && config.logPrivate) {
-			this.logMessage(messageToString(data.character, data.message, date), data.character, date);
+			this.logMessage(messageToString(data.character, data.message, date), data.character.toLowerCase(), date);
 		} else if(type === 'RLL') {
 			if(data.channel && config.logChannels)
-				this.logMessage(`[${format(date, 'HH:mm')}] ${data.message}`, data.channel, date);
+				this.logMessage(`[${format(date, 'HH:mm')}] ${data.message}`, this.getChannelDir(data.channel), date);
 			else if(data.recipient && config.logPrivate)
-				this.logMessage(`[${format(date, 'HH:mm')}] ${data.message}`, data.recipient === this.character ? data.character : data.recipient, date);
+				this.logMessage(`[${format(date, 'HH:mm')}] ${data.message}`, (data.recipient === this.character ? data.character : data.recipient).toLowerCase(), date);
 		}
+	}
+
+	private getChannelDir(channel: string) {
+		return `#${this.channels.getChannel(channel)!.name} - ${channel}`.toLowerCase()
 	}
 
 	private logMessage(message: string, name: string, date: Date, ads = false): void {
@@ -100,13 +104,12 @@ export default class ServerConnection extends ChatConnection {
 				case 'MSG':
 				case 'LRP':
 				case 'PRI':
-				case 'RLL':
 					const data = JSON.parse(msg.substr(3));
 					const date = new Date();
 					if(type === 'MSG' && config.logChannels || type === 'LRP' && config.logAds) {
-						this.logMessage(messageToString(this.character, data.message, date), data.channel, date, type === 'LRP');
+						this.logMessage(messageToString(this.character, data.message, date), this.getChannelDir(data.channel), date, type === 'LRP');
 					} else if(type === 'PRI' && config.logPrivate) {
-						this.logMessage(messageToString(this.character, data.message, date), data.recipient, date);
+						this.logMessage(messageToString(this.character, data.message, date), data.recipient.toLowerCase(), date);
 					}
 					this.buffer = [];
 			}
