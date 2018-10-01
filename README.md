@@ -16,6 +16,7 @@ git clone https://github.com/MayaWolf/fchat-bnc.git
 cd fchat-bnc
 yarn install
 cp config.example.json config.json
+yarn build
 ```
 
 ## Configuration
@@ -30,6 +31,6 @@ If you would like to run a secure web socket (`wss://`) server, you need to spec
 If the `debug` parameter is enabled, the server will log the raw traffic to stdout.
 
 ## Usage
-Run `node index.js` to run interactively, or `(node index.js &) &> log` to fork into the background and create a file `log` with the program's output.
+Run `node index.js` to run fchat-bnc interactively, or `(node index.js &) &> log` to fork into the background and create a file `log` with the program's output.
 
 Then connect to the server on the port specified in the config using any client that lets you specify the host to connect to, preferably FChat 3.0.

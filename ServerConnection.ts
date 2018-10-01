@@ -24,6 +24,9 @@ export default class ServerConnection extends ChatConnection {
 		super(pkg.name, pkg.version, socketProvider, account, password);
 		this.characters = Characters(this);
 		this.channels = Channels(this, this.characters);
+		this.onEvent('closed', () => {
+			for(const client of this.clients) client.close();
+		});
 	}
 
 	protected handleMessage<T extends keyof Connection.ServerCommands>(type: T, data: any): any {

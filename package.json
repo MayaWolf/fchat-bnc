@@ -1,18 +1,18 @@
 {
   "name": "fchat-bnc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "author": "Maya Wolf",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^9.4.0",
+    "@types/node": "^9.0.0",
     "@types/qs": "^6.5.0",
-    "@types/ws": "^4.0.0",
+    "@types/ws": "^6.0.1",
     "date-fns": "^1.28.5",
     "fchat": "^1.0.0",
-    "tslib": "^1.9.0",
-    "typescript": "^2.7.1",
-    "ws": "^4.0.0"
+    "tslib": "^1.9.3",
+    "typescript": "^3.1.1",
+    "ws": "^6.0.0"
   },
   "scripts": {
     "build": "tsc"

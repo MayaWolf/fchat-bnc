@@ -51,6 +51,7 @@ const connections: {[key: string]: ServerConnection} = {};
 for(const character of config.characters) {
 	const connection = new ServerConnection(WebSocket, config.account, config.password);
 	connection.connect(character);
+	connection.onError((e) => console.error(e));
 	connections[character] = connection;
 }
 const hServer = config.certFile ? https.createServer({ cert: fs.readFileSync(config.certFile), key: fs.readFileSync(config.keyFile) }) : undefined;
@@ -62,7 +63,6 @@ server.on('connection', (client) => {
 	client.on('message', async <T extends keyof Connection.ClientCommands>(msg: string) => {
 		const type = <T>msg.substr(0, 3);
 		const data: any = msg.length > 6 ? JSON.parse(msg.substr(4)) : undefined;
-		if(server === undefined && type !== 'IDN') return client.send(`ERR {"number":3,"message":"This command requires that you have logged in."}`);
 		if(type === 'IDN') {
 			if(server !== undefined) return client.send(`ERR {"number":11,"message":"Already identified."}`);
 			const auth = (await Axios.post('https://www.f-list.net/json/api/auth.php', qs.stringify({ account: config.account, ticket: data.ticket }))).data;
@@ -74,8 +74,15 @@ server.on('connection', (client) => {
 			clearTimeout(closeTimer);
 			client.send(`IDN {"character":"${data.character}"}`);
 			pinInterval = setInterval(() => client.send('PIN'), 30000);
-			server.addClient(client);
-		}
+			if(server.isOpen) server.addClient(client);
+			else {
+				function onConnect() {
+					server!.addClient(client);
+					server!.offEvent('connected', onConnect);
+				}
+				server.onEvent('connected', onConnect);
+			}
+		} else if(server === undefined) return client.send(`ERR {"number":3,"message":"This command requires that you have logged in."}`);
 	});
 	client.on('close', () => {
 		clearTimeout(closeTimer);
