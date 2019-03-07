@@ -24,7 +24,7 @@ yarn build
 
 `account`, `password`, `characters`, `host`, `port` are required.
 
-`savedChannels` makes the BNC auto-join the specified channels after connecting to the server. As always, you gotta specify the `ADH-...` code for privately owned rooms.
+`savedChannels` makes the BNC auto-join the specified channels after connecting to the server. As always, you have to specify the `ADH-...` code for privately owned rooms.
 
 If you would like to run a secure web socket (`wss://`) server, you need to specify the `certFile` and `keyFile` config parameters.
 

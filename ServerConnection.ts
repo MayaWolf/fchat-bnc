@@ -35,7 +35,10 @@ export default class ServerConnection extends ChatConnection {
 		const date = new Date();
 		data = data || {};
 		data.bncTime = date.getTime();
-		for(const client of this.clients) client.send(`${type} ${JSON.stringify(data)}`)
+		for(const client of this.clients) {
+			if(client.readyState === WebSocketConnection.ReadyState.OPEN)
+				client.send(`${type} ${JSON.stringify(data)}`)
+		}
 		if(type === 'MSG' || type === 'PRI' || type === 'RLL')
 			this.buffer.push(`${type} ${JSON.stringify(data)}`);
 		if(type === 'MSG' && config.logChannels || type === 'LRP' && config.logAds) {
@@ -77,9 +80,9 @@ export default class ServerConnection extends ChatConnection {
 		this.clients.push(socket);
 		socket.on('close', () => {
 			this.clients.splice(this.clients.indexOf(socket), 1);
-			if(this.clients.length === 0) {
+			if(this.clients.length === 0 && config.disconnectedStatus) {
 				this.idleStatus = { status: this.characters.ownCharacter.status, statusmsg: this.characters.ownCharacter.statusText };
-				this.send('STA', { status: 'idle', statusmsg: 'Disconnected' });
+				this.send('STA', { status: 'idle', statusmsg: config.disconnectedStatus });
 			}
 		});
 		socket.on('message', (msg: string) => {
@@ -87,22 +90,6 @@ export default class ServerConnection extends ChatConnection {
 			const type = <keyof Connection.ClientCommands>msg.substr(0, 3);
 			switch(type) {
 				case 'PIN':
-					return;
-				case 'CHA':
-					const official = [];
-					for(const key in this.channels.officialChannels) {
-						const channel = this.channels.officialChannels[key]!;
-						official.push({ name: channel.name, mode: <Channel.Mode>'both', characters: channel.memberCount });
-					}
-					send('CHA', { channels: official });
-					return;
-				case 'ORS':
-					const rooms = [];
-					for(const key in this.channels.openRooms) {
-						const channel = this.channels.openRooms[key]!;
-						rooms.push({ name: channel.id, title: channel.name, characters: channel.memberCount });
-					}
-					send('ORS', { channels: rooms });
 					return;
 				case 'MSG':
 				case 'LRP':

@@ -22,6 +22,10 @@ class WebSocket implements WebSocketConnection {
 		this.socket = new WS(config.host);
 	}
 
+	get readyState() {
+		return this.socket.readyState;
+	}
+
 	close() {
 		this.socket.close();
 	}
@@ -73,7 +77,10 @@ server.on('connection', (client) => {
 			if(server === undefined) return client.send(`ERR {"number":6,"message":"The character requested was not found."}`);
 			clearTimeout(closeTimer);
 			client.send(`IDN {"character":"${data.character}"}`);
-			pinInterval = setInterval(() => client.send('PIN'), 30000);
+			pinInterval = setInterval(() => {
+				if(client.readyState === WebSocketConnection.ReadyState.OPEN)
+					client.send('PIN')
+			}, 30000);
 			if(server.isOpen) server.addClient(client);
 			else {
 				function onConnect() {

@@ -11,5 +11,6 @@
   "logAds": false,
   "logDirectory": "logs",
   "certFile": null,
-  "keyFile": null
+  "keyFile": null,
+  "disconnectedStatus": "Disconnected"
 }
